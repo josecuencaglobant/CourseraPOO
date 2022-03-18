@@ -55,7 +55,14 @@ public class ContactList {
     }
 
     public int getIndex(Contact contact){
-        return getContacts().indexOf(contact);
+        int index = 0;
+        for(Contact value: getContacts()){
+            if(value.getUsername().equals(contact.getUsername())){
+                return index;
+            }
+            index++;
+        }
+        return 0;
     }
 
     public boolean hasContact(Contact contact){

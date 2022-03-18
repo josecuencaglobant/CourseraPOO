@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sharingapp.finalexam.Contact;
 import com.example.sharingapp.finalexam.ContactList;
@@ -80,10 +81,21 @@ public class EditItemActivity extends AppCompatActivity {
         width.setText(dimensions.getWidth());
         height.setText(dimensions.getHeight());
 
-        borrower_spinner.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, contact_list.getAllUsernames().toArray(new String[0])));
+        ArrayAdapter<Contact> adapter =
+                new ArrayAdapter<Contact>(getApplicationContext(),  android.R.layout.simple_spinner_dropdown_item, contact_list.getContacts());
+        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
+        borrower_spinner.setAdapter(adapter);
+
         String status_str = item.getStatus();
         if (status_str.equals("Borrowed")) {
             status.setChecked(false);
+            try{
+                borrower_spinner.setSelection(
+                        contact_list.getIndex(item.getBorrower())
+                );
+            }catch(Exception ex){
+
+            }
         } else {
             borrower_tv.setVisibility(View.GONE);
             borrower_spinner.setVisibility(View.GONE);
@@ -135,7 +147,7 @@ public class EditItemActivity extends AppCompatActivity {
         String length_str = length.getText().toString();
         String width_str = width.getText().toString();
         String height_str = height.getText().toString();
-        //String borrower_str = borrower.getText().toString();
+        Contact borrowed = (Contact) borrower_spinner.getSelectedItem();
 
         Dimensions dimensions = new Dimensions(length_str, width_str, height_str);
 
@@ -169,14 +181,6 @@ public class EditItemActivity extends AppCompatActivity {
             return;
         }
 
-        /*
-        if (borrower_str.equals("") && !status.isChecked()) {
-            borrower.setError("Empty field!");
-            return;
-        }
-        */
-
-
         // Reuse the item id
         String id = item.getId();
         item_list.deleteItem(item);
@@ -186,7 +190,7 @@ public class EditItemActivity extends AppCompatActivity {
         boolean checked = status.isChecked();
         if (!checked) {
             updated_item.setStatus("Borrowed");
-            //updated_item.setBorrower(borrower_str);
+            updated_item.setBorrower(borrowed);
         }
         item_list.addItem(updated_item);
 
